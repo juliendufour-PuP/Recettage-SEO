@@ -1,30 +1,49 @@
 # Exports Screaming Frog à fournir
 
-> Les noms de menus correspondent à Screaming Frog SEO Spider en version récente (interface en anglais). Ils peuvent changer légèrement selon la version et la langue : au premier usage, vérifie-les et corrige ce fichier si besoin. Les exports peuvent être en français ou en anglais, les scripts lisent les deux.
+> **Screaming Frog en français ou en anglais : les deux fonctionnent.** Les scripts reconnaissent chaque export par son nom de fichier, et sinon par son contenu (colonnes présentes, codes HTTP des lignes). Les colonnes sont retrouvées par leurs mots-clés, quel que soit leur ordre (« Title 1 Length », « Longueur du titre 1 »). Les valeurs des cellules ne posent pas de problème : l'indexabilité est jugée sur le code HTTP, la canonical et la directive « noindex », identiques dans les deux langues.
+>
+> Les menus sont donnés ci-dessous en français, avec l'anglais entre parenthèses. Si un libellé diffère sur ta version, corrige ce fichier.
 
-Dépose tous les fichiers dans `Recette-SEO-<Client>/exports/preprod/` et `Recette-SEO-<Client>/exports/ancien-site/`, sans les renommer. Format CSV uniquement.
+Dépose tous les fichiers dans `Recette-SEO-<Client>/exports/preprod/` et `Recette-SEO-<Client>/exports/ancien-site/`, **sans les renommer**. Format CSV uniquement.
 
-**Indispensables pour les scripts :** `internal_all` (préprod et ancien site), les trois exports d'inlinks 3xx, 4xx et 5xx, `redirect_chains`, `insecure_content` et `images_missing_alt_inlinks`. Les autres servent aux agents. Un export manquant fait passer ses contrôles en « Non testable » ; rien n'est deviné. Si un fichier n'est pas reconnu par son nom, déclare-le dans `exports/preprod/correspondance.json`, par exemple `{"internal_all": "mon-export.csv"}`.
+**Avant la recette, lance le diagnostic :**
+
+```bash
+python plugins/recette/scripts/recette.py exports Recette-SEO-<Client>
+```
+
+Il dit, pour chaque fichier, comment il a été reconnu (par son nom ou par son contenu), quelles colonnes ont été comprises, lesquelles manquent, et quels exports indispensables sont absents. Un fichier resté « non reconnu » se déclare dans `exports/preprod/correspondance.json`, par exemple `{"internal_all": "mon-export.csv"}`.
+
+**Indispensables pour les scripts :** `internal_all` (préprod et ancien site), les trois exports d'inlinks 3xx, 4xx et 5xx, `redirect_chains`, `insecure_content` et `images_missing_alt_inlinks`. Les autres servent aux agents. Un export manquant fait passer ses contrôles en « Non testable » ; rien n'est deviné.
 
 ## 1. Réglages du crawl de la préprod
 
-| Réglage | Où | Valeur |
+Tout se règle dans **Configuration du crawl** (Configuration). Enregistre ces réglages une fois pour toutes (Fichier > Configuration > Enregistrer sous) et recharge-les à chaque recette.
+
+| Écran | Réglage | Valeur |
 |---|---|---|
-| Authentification | Configuration > Authentication | Identifiants de la préprod (basic auth ou formulaire) |
-| Robots.txt | Configuration > robots.txt | Ignore robots.txt (la préprod bloque souvent tout) |
-| Noindex et nofollow | Configuration > Spider > Advanced | Décocher « Respect Noindex » et « Respect Nofollow » |
-| Rendu | Configuration > Spider > Rendering | JavaScript (nécessaire pour le contrôle JS-01) |
-| Sitemap | Configuration > Spider > Crawl | Cocher « Crawl Linked XML Sitemaps » et ajouter l'URL du sitemap de la préprod |
-| Doublons | Configuration > Content > Duplicates | Activer « Enable Near Duplicates » |
-| Analyse de crawl | Crawl Analysis > Configure | Tout cocher, puis lancer Crawl Analysis > Start à la fin du crawl |
-| Données structurées | Configuration > Spider > Extraction | Cocher JSON-LD, Microdata, RDFa et la validation Schema.org |
-| HTML | Configuration > Spider > Extraction | Cocher « Store HTML » et « Store Rendered HTML » |
+| Authentification (Authentication) | Identifiants | Ceux de la préprod (basic auth ou formulaire) |
+| robots.txt | Mode | Ignorer robots.txt (la préprod bloque souvent tout) |
+| Spider > Crawl | Liens de page | Pagination : cocher Crawl. Hreflang : Crawl si site multilingue. AMP : Crawl + Stocker si le site en a. Liens non explorables : Stocker |
+| Spider > Crawl | Comportement du crawl | Cocher « Suivi interne nofollow ». « Crawl de tous les sous-domaines » seulement si le site en utilise plusieurs |
+| Spider > Crawl | Sitemaps XML | Cocher « Sitemaps XML liés au crawl », puis « Crawler ces sitemaps » avec l'URL du sitemap de la préprod |
+| Spider > Avancé (Advanced) | Problèmes | **Décocher « Ignorer les URL non indexables pour les problèmes »** : sur une préprod en noindex, sinon presque tous les problèmes sont masqués |
+| Spider > Avancé | Directives | « Respecter noindex », « Respecter les versions canoniques », « Respecter Suiv./Préc. » : décochés |
+| Spider > Avancé | Suivi | Cocher « Toujours suivre les redirections » et « Toujours suivre les versions canoniques » |
+| Spider > Avancé | Images | Cocher « Extraire des images de l'attribut srcset » |
+| Spider > Avancé | Délais | Délai de réponse : 20 s (30 si la préprod est lente). Tentatives de réponse 5xx : 1 |
+| Spider > Rendu (Rendering) | Rendu | JavaScript, préréglage Googlebot Mobile : Smartphone, captures d'écran cochées |
+| Spider > Rendu | Erreurs | Cocher « Activer le signalement des erreurs JavaScript ». Délai AJAX : 5 s (8 à 10 si les captures sont vides) |
+| Spider > Extraction | Données structurées | Cocher JSON-LD, Microdata, RDFa et la validation Schema.org |
+| Spider > Extraction | HTML | Cocher « Stocker le HTML » et « Stocker le HTML rendu » |
+| Contenu > Doublons (Content > Duplicates) | Quasi-doublons | Activer les quasi-doublons |
+| Analyse du crawl (Crawl Analysis) | Configurer | Tout cocher, puis lancer l'analyse à la fin du crawl |
 
 ## 2. Exports de la préprod
 
-| Code utilisé dans le référentiel | Export |
+| Code utilisé dans le référentiel | Export (menus anglais, même emplacement en français) |
 |---|---|
-| `internal_all` | Onglet Internal, filtre All > Export |
+| `internal_all` | Onglet Internal (Interne), filtre All (Tous) > Export |
 | `redirection_3xx_inlinks` | Bulk Export > Response Codes > Internal > Redirection (3xx) Inlinks |
 | `client_error_4xx_inlinks` | Bulk Export > Response Codes > Internal > Client Error (4xx) Inlinks |
 | `server_error_5xx_inlinks` | Bulk Export > Response Codes > Internal > Server Error (5xx) Inlinks |
@@ -47,10 +66,14 @@ Dépose tous les fichiers dans `Recette-SEO-<Client>/exports/preprod/` et `Recet
 
 ## 3. Crawl du site actuel en prod
 
-Crawl standard du site en ligne, sans authentification ni rendu JavaScript. Un seul export suffit :
+Crawl standard du site en ligne, sans authentification ni rendu JavaScript, robots.txt respecté. Un seul export suffit :
 
 | Code | Export |
 |---|---|
-| `ancien_internal_all` | Onglet Internal, filtre All > Export |
+| `ancien_internal_all` | Onglet Internal (Interne), filtre All (Tous) > Export, déposé dans `exports/ancien-site/` |
 
 Les URLs en 200 de cet export sont testées une à une sur la préprod pour les contrôles RED-01 à RED-05.
+
+## 4. Plus tard : crawl lancé par le plugin
+
+Screaming Frog peut être piloté sans interface (ligne de commande, ou son serveur MCP officiel). Les noms d'exports y sont des chaînes exactes. Le plugin ne les écrira pas en dur : il les lira sur le poste du TM avec `--help export-tabs`, `--help bulk-export` et `--help save-report`, pour fonctionner quelle que soit la langue installée.

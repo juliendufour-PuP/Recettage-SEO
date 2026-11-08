@@ -6,6 +6,12 @@ Python 3.10 ou plus récent, sans aucune dépendance à installer.
 python plugins/recette/scripts/recette.py tout Recette-SEO-<Client>
 ```
 
+Avant tout, vérifie que les exports sont compris :
+
+```bash
+python plugins/recette/scripts/recette.py exports Recette-SEO-<Client>
+```
+
 Chaque commande peut aussi se lancer seule : `preparer`, `sitemap`, `robots`, `sf`, `redirections`, `gabarits`, `langues`, `verifier`. L'ordre de `tout` compte : `sitemap` doit passer avant `sf`, qui croise le sitemap avec le crawl.
 
 ## Ce qu'il faut dans le dossier de recette
@@ -18,7 +24,7 @@ Chaque commande peut aussi se lancer seule : `preparer`, `sitemap`, `robots`, `s
 | `exports/ancien-site/internal_all.csv` | Crawl du site actuel en prod |
 | `plan-redirections.csv` | Facultatif : ancienne URL ; nouvelle URL |
 
-Si un export n'est pas reconnu par son nom, indique-le dans `exports/preprod/correspondance.json`, par exemple `{"internal_all": "mon-export.csv"}`.
+Screaming Frog peut être en français ou en anglais. Un export est reconnu par son nom de fichier, sinon par son contenu (colonnes, codes HTTP des lignes) ; une colonne par son nom exact, sinon par ses mots-clés dans n'importe quel ordre. Si un export reste « non reconnu » dans le diagnostic `exports`, indique-le dans `exports/preprod/correspondance.json`, par exemple `{"internal_all": "mon-export.csv"}`.
 
 ## Ce qu'ils produisent
 
@@ -46,7 +52,7 @@ Si un export n'est pas reconnu par son nom, indique-le dans `exports/preprod/cor
 
 ## Limites connues
 
-- Les alias de colonnes en français sont à confirmer sur de vrais exports d'une interface Screaming Frog en français.
+- La lecture des exports français est testée sur des exports simulés (libellés traduits, mots dans un autre ordre, noms de fichiers quelconques) ; les libellés exacts de la version française restent à confirmer sur un vrai export, avec `recette.py exports`.
 - Les données structurées sont contrôlées sur leur présence, pas sur leur validité selon schema.org.
 
 ## Tests

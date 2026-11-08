@@ -3,6 +3,8 @@
     python recette.py <commande> <dossier de recette>
 
 Commandes, dans l'ordre conseillé :
+    exports       ce que les scripts comprennent des exports Screaming Frog (préprod et
+                  site actuel), interface en français ou en anglais : à lancer en premier
     preparer      statuts Non applicable et Après mise en ligne (profil client)
     sitemap       lit le sitemap de la préprod (SIT-01, SIT-03)
     robots        robots.txt et blocages de la préprod (ROB-01, PRE-02)
@@ -12,6 +14,8 @@ Commandes, dans l'ordre conseillé :
     langues       redirections selon la langue (site international)
     verifier      cohérence résultats / annexe / référentiel
     tout          toutes les commandes ci-dessus
+    bilan         mesures de la recette et journal local, pour l'agent recette-amelioration
+                  (à lancer en fin de processus, hors « tout »)
 """
 import json
 import os
@@ -19,10 +23,12 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import bilan  # noqa: E402
 import controles_sf  # noqa: E402
 import controles_web  # noqa: E402
+import sf  # noqa: E402
 import verifier  # noqa: E402
-from commun import charger_acces, charger_profil  # noqa: E402
+from commun import chemin, charger_acces, charger_profil  # noqa: E402
 from web import Client  # noqa: E402
 
 
@@ -34,6 +40,9 @@ def _client(dossier):
 
 
 def commande(nom, dossier):
+    if nom == "exports":
+        return {"preprod": sf.diagnostic(chemin(dossier, "exports", "preprod")),
+                "ancien-site": sf.diagnostic(chemin(dossier, "exports", "ancien-site"), ["internal_all"])}
     if nom == "preparer":
         return verifier.preparer(dossier)
     if nom == "sitemap":
@@ -51,6 +60,8 @@ def commande(nom, dossier):
         return controles_web.langues(dossier)
     if nom == "verifier":
         return verifier.verifier(dossier)
+    if nom == "bilan":
+        return bilan.bilan(dossier)
     raise SystemExit(f"Commande inconnue : {nom}\n{__doc__}")
 
 

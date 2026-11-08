@@ -96,9 +96,38 @@ def ecrire_csv(chemin_, entetes, lignes):
         w.writerows(lignes)
 
 
+# En-têtes et noms de fichiers des exports, selon la langue de Screaming Frog.
+# La version française n'utilise volontairement aucun nom de fichier reconnaissable
+# et place certains mots dans un autre ordre : les scripts doivent s'en sortir par le contenu.
+EXPORTS = {
+    "en": {
+        "internal": ["Address", "Content Type", "Status Code", "Status", "Indexability", "Indexability Status",
+                     "Title 1", "Title 1 Pixel Width", "Meta Description 1", "Meta Description 1 Pixel Width",
+                     "H1-1", "H1-2", "Meta Robots 1", "Canonical Link Element 1", "Word Count", "Crawl Depth",
+                     "Unique Inlinks", "Size (bytes)", "Hash", 'rel="next" 1', 'rel="prev" 1'],
+        "inlinks": ["Type", "Source", "Destination", "Anchor", "Status Code"],
+        "ancien": ["Address", "Content Type", "Status Code", "Unique Inlinks"],
+        "fichiers": ("internal_all.csv", "client_error_(4xx)_inlinks.csv", "internal_all.csv"),
+    },
+    "fr": {
+        "internal": ["Adresse", "Type de contenu", "Code HTTP", "Statut", "Indexabilité", "Statut d'indexabilité",
+                     "Titre 1", "Largeur en pixels du titre 1", "Méta description 1",
+                     "Méta description 1 largeur en pixels", "H1-1", "H1-2", "Méta robots 1",
+                     "Élément de lien canonique 1", "Nombre de mots", "Profondeur du crawl",
+                     "Liens entrants uniques", "Taille (octets)", "Hash", 'rel="suivant" 1', 'rel="précédent" 1'],
+        "inlinks": ["Type", "Source", "Destination", "Ancre", "Code de statut"],
+        "ancien": ["Adresse", "Type de contenu", "Code de statut", "Liens entrants uniques"],
+        "fichiers": ("export (2).csv", "export (3).csv", "crawl ancien site.csv"),
+    },
+}
+
+
 class TestRecette(unittest.TestCase):
+    LANGUE = "en"
+
     @classmethod
     def setUpClass(cls):
+        x = EXPORTS[cls.LANGUE]
         cls.serveur = ThreadingHTTPServer(("127.0.0.1", 0), Preprod)
         threading.Thread(target=cls.serveur.serve_forever, daemon=True).start()
         base = f"http://127.0.0.1:{cls.serveur.server_port}"
@@ -118,10 +147,7 @@ class TestRecette(unittest.TestCase):
             }, f)
         with open(os.path.join(d, "acces-preprod.local.json"), "w", encoding="utf-8") as f:
             json.dump({"preprod": base, "type": "basic", "identifiant": "test", "mot_de_passe": "secret"}, f)
-        ent = ["Address", "Content Type", "Status Code", "Status", "Indexability", "Indexability Status",
-               "Title 1", "Title 1 Pixel Width", "Meta Description 1", "Meta Description 1 Pixel Width",
-               "H1-1", "H1-2", "Meta Robots 1", "Canonical Link Element 1", "Word Count", "Crawl Depth",
-               "Unique Inlinks", "Size (bytes)", "Hash", 'rel="next" 1', 'rel="prev" 1']
+        ent = x["internal"]
         h = "text/html; charset=UTF-8"
         desc = "Une description de longueur correcte pour le test, assez longue pour passer."
 
@@ -130,7 +156,7 @@ class TestRecette(unittest.TestCase):
             return [u, h, "200", "OK", "Non-Indexable", "noindex", titre, px, desc, 600, h1, "", "noindex, nofollow",
                     canonical if canonical is not None else u, mots, prof, liens, 20000, hash_, "", prev]
 
-        ecrire_csv(os.path.join(d, "exports", "preprod", "internal_all.csv"), ent, [
+        ecrire_csv(os.path.join(d, "exports", "preprod", x["fichiers"][0]), ent, [
             ligne("/", "Accueil", "Bienvenue", 500, 0, 10, "a1"),
             ligne("/services/", "Services", "Services", 150, 1, 2, "a2"),
             ligne("/contact/", "Contact", "Contact", 300, 1, 10, "a3"),
@@ -141,18 +167,16 @@ class TestRecette(unittest.TestCase):
             [base + "/img/lourde.jpg", "image/jpeg", "200", "OK", "Indexable", "", "", "", "", "", "", "", "", "",
              "", 2, 1, 250000, "", "", ""],
         ])
-        ecrire_csv(os.path.join(d, "exports", "preprod", "client_error_(4xx)_inlinks.csv"),
-                   ["Type", "Source", "Destination", "Anchor", "Status Code"],
+        ecrire_csv(os.path.join(d, "exports", "preprod", x["fichiers"][1]), x["inlinks"],
                    [["Hyperlink", base + "/", base + "/supprimee/", "Ancien lien", "404"],
                     ["Hyperlink", base + "/contact/", base + "/supprimee/", "Ancien lien", "404"]])
-        ecrire_csv(os.path.join(d, "exports", "ancien-site", "internal_all.csv"),
-                   ["Address", "Content Type", "Status Code", "Unique Inlinks"],
+        ecrire_csv(os.path.join(d, "exports", "ancien-site", x["fichiers"][2]), x["ancien"],
                    [["https://ancien.example/ancien-service.html", h, "200", "30"],
                     ["https://ancien.example/ancienne-page", h, "200", "5"],
                     ["https://ancien.example/disparue", h, "200", "8"],
                     ["https://ancien.example/contact/", h, "200", "20"]])
         cls.sortie = {n: recette.commande(n, d) for n in
-                      ("preparer", "sitemap", "robots", "sf", "redirections", "gabarits", "langues", "verifier")}
+                      ("exports", "preparer", "sitemap", "robots", "sf", "redirections", "gabarits", "langues", "verifier")}
         with open(os.path.join(d, "donnees", "resultats.json"), encoding="utf-8") as f:
             cls.res = json.load(f)
 
@@ -171,6 +195,17 @@ class TestRecette(unittest.TestCase):
     def test_verification_sans_erreur(self):
         v = self.sortie["verifier"]
         self.assertEqual(v["erreurs"], [], v)
+
+    def test_exports_tous_compris(self):
+        diag = self.sortie["exports"]
+        pre, anc = diag["preprod"]["fichiers"], diag["ancien-site"]["fichiers"]
+        f_int, f_4xx, f_anc = EXPORTS[self.LANGUE]["fichiers"]
+        self.assertTrue(pre[f_int]["reconnu_comme"].startswith("internal_all"), pre[f_int])
+        self.assertTrue(pre[f_4xx]["reconnu_comme"].startswith("client_error_4xx_inlinks"), pre[f_4xx])
+        self.assertTrue(anc[f_anc]["reconnu_comme"].startswith("internal_all"), anc[f_anc])
+        # toutes les colonnes présentes dans le faux export sont comprises
+        self.assertEqual(pre[f_int]["colonnes_manquantes"], [], pre[f_int])
+        self.assertEqual(len(pre[f_int]["colonnes_reconnues"]), 21, pre[f_int]["colonnes_reconnues"])
 
     def test_profil(self):
         self.statut("SD-03", "Non applicable")
@@ -220,6 +255,72 @@ class TestRecette(unittest.TestCase):
     def test_langues(self):
         self.statut("ML-03", "OK")
         self.statut("ML-04", "OK")
+
+
+class TestRecetteFrancais(TestRecette):
+    """Mêmes données, mêmes résultats attendus, exports d'un Screaming Frog en français."""
+    LANGUE = "fr"
+
+
+class TestBilan(unittest.TestCase):
+    """Bilan et journal : chiffres repris tels quels, rien d'estimé, une ligne par recette."""
+
+    def setUp(self):
+        self.local = tempfile.mkdtemp(prefix="recettage-home-")
+        os.environ["RECETTAGE_SEO_HOME"] = self.local
+        self.dossiers = []
+
+    def tearDown(self):
+        os.environ.pop("RECETTAGE_SEO_HOME", None)
+        for d in self.dossiers + [self.local]:
+            shutil.rmtree(d, ignore_errors=True)
+
+    def recette(self, tokens, avec_retour):
+        d = tempfile.mkdtemp(prefix="Recette-SEO-Bilan-")
+        self.dossiers.append(d)
+        os.makedirs(os.path.join(d, "donnees"))
+        with open(os.path.join(d, "profil.json"), "w", encoding="utf-8") as f:
+            json.dump({"client": "Test", "preprod": "https://preprod.test"}, f)
+        recette.commande("preparer", d)
+        with open(os.path.join(d, "donnees", "metriques.json"), "w", encoding="utf-8") as f:
+            json.dump({"etapes": [
+                {"etape": "scripts", "agent": None, "debut": "2026-11-08T09:00:00", "fin": "2026-11-08T09:02:00",
+                 "tokens": 0, "appels_outils": 3},
+                {"etape": "navigateur", "agent": "recette-live", "debut": "2026-11-08T09:02:00",
+                 "fin": "2026-11-08T09:12:00", "tokens": tokens, "appels_outils": 40}]}, f)
+        if avec_retour:
+            ecrire_csv(os.path.join(d, "retour-tm", "tickets.csv"),
+                       ["ID ticket", "Contrôles", "Titre", "Description du problème", "Validation TM"],
+                       [["T-001", "COD-02", "Corriger les liens 404", "", "Validé"],
+                        ["T-002", "LNK-01", "Retirer les doublons", "", "Rejeté"],
+                        ["T-003", "", "Bouton d'appel absent sur mobile", "Ajouté par le TM", "Validé"]])
+        return d
+
+    def test_bilan_et_journal(self):
+        premier = self.recette(40000, avec_retour=True)
+        b1 = recette.commande("bilan", premier)
+        m = b1["mesures"]
+        self.assertEqual(m["duree_totale_s"], 720)
+        self.assertEqual(m["tokens_total"], 40000)
+        self.assertEqual(m["retour_tm"]["rejetes"], 1)
+        self.assertEqual(m["retour_tm"]["ajoutes_par_tm"], 1)
+        self.assertEqual(b1["recettes_dans_historique"], 0)
+        self.assertIsNone(b1["comparaison"]["tokens_total"]["ecart_pct"])
+        recette.commande("bilan", premier)  # relancer la même recette ne duplique pas le journal
+        second = self.recette(30000, avec_retour=False)
+        b2 = recette.commande("bilan", second)
+        self.assertEqual(b2["recettes_dans_historique"], 1)
+        self.assertEqual(b2["comparaison"]["tokens_total"]["ecart_pct"], -25.0)
+        self.assertIsNone(b2["mesures"]["retour_tm"])
+        self.assertEqual(b2["rejets_cumules_par_controle"], {"LNK-01": 1})
+        with open(os.path.join(self.local, "journal.jsonl"), encoding="utf-8") as f:
+            self.assertEqual(len(f.readlines()), 2)
+
+    def test_tokens_non_mesures(self):
+        d = self.recette(None, avec_retour=False)
+        b = recette.commande("bilan", d)
+        self.assertIsNone(b["mesures"]["tokens_total"])
+        self.assertIsNone(b["mesures"]["tokens_par_controle_traite"])
 
 
 if __name__ == "__main__":

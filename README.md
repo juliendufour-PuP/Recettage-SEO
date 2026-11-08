@@ -8,7 +8,13 @@ Un plugin Claude Code qui fait la recette SEO d'un site en préproduction après
 
 Trois règles : aucun chiffre inventé (tout comptage vient d'un script), les constats prouvés sont séparés des hypothèses, et une hypothèse ne devient un ticket qu'une fois validée par le TM.
 
-> **État : en construction (v0.2).** Le référentiel des contrôles, les gabarits et les scripts de comptage sont prêts (56 contrôles sur 79 calculés automatiquement). Les agents et la commande `/recette:lancer` arrivent dans les prochaines versions.
+> **État : en construction (v0.3).** Le référentiel des contrôles, les gabarits, les scripts de comptage (56 contrôles sur 79 calculés automatiquement) et l'agent d'amélioration continue sont prêts. Les autres agents et la commande `/recette:lancer` arrivent dans les prochaines versions.
+
+## Un processus qui s'améliore
+
+En fin de recette, l'agent `recette-amelioration` mesure le déroulé (durée, tokens, couverture, tickets rejetés ou ajoutés par le TM), le compare aux recettes précédentes et propose au plus 5 améliorations pour aller plus vite, être plus précis et consommer moins de tokens. Les propositions validées par le TM deviennent des consignes que tous les agents appliquent à la recette suivante. Celles qui ne donnent pas le gain annoncé sont retirées.
+
+Une règle ne bouge pas : aucune amélioration ne peut supprimer un contrôle, baisser une priorité ou relever un seuil. Les mesures et les apprentissages restent sur ton poste, dans `~/.claude/recettage-seo/`. Le détail est dans `plugins/recette/references/amelioration-continue.md`.
 
 ---
 
@@ -61,4 +67,6 @@ Redémarre Claude Code.
 | `plugins/recette/references/regles-recette.md` | Les règles communes : preuves, statuts, priorité, interdiction des chiffres inventés |
 | `plugins/recette/templates/` | Fiche client, profil pour les scripts, exports Screaming Frog, structure des livrables, modèle d'accès à la préprod |
 | `plugins/recette/scripts/` | Scripts de comptage et de requêtes (voir son README) |
+| `plugins/recette/agents/recette-amelioration.md` | Agent d'amélioration continue |
+| `plugins/recette/references/amelioration-continue.md` | Mesures, garde-fous et boucle d'amélioration |
 | `plugins/recette/tests/` | Jeu d'essai avec une fausse préprod locale |

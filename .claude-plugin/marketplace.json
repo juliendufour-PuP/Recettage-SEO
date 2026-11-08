@@ -10,7 +10,7 @@
     {
       "name": "recette",
       "description": "Recette SEO sur préprod après refonte : checklist technique PumpUp, exports Screaming Frog, contrôle des redirections depuis l'ancien site, constats prouvés séparés des hypothèses, fichier de travail et annexe.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "author": {
         "name": "PumpUp"
       },
