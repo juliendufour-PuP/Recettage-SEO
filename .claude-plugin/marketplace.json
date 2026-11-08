@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "recettage-seo",
+  "description": "Recette SEO PumpUp : contrôle d'une préproduction après refonte, avant mise en ligne.",
+  "owner": {
+    "name": "PumpUp",
+    "email": "julien.dufour@pumpup.fr"
+  },
+  "plugins": [
+    {
+      "name": "recette",
+      "description": "Recette SEO sur préprod après refonte : checklist technique PumpUp, exports Screaming Frog, contrôle des redirections depuis l'ancien site, constats prouvés séparés des hypothèses, fichier de travail et annexe.",
+      "version": "0.1.0",
+      "author": {
+        "name": "PumpUp"
+      },
+      "category": "marketing",
+      "source": "./plugins/recette"
+    }
+  ]
+}
