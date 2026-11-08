@@ -27,10 +27,11 @@ MOTIFS_FICHIERS = {
     "redirection_3xx_inlinks": [r"3xx.*(inlinks|liens_entrants)", r"(inlinks|liens_entrants).*3xx"],
     "client_error_4xx_inlinks": [r"4xx.*(inlinks|liens_entrants)", r"(inlinks|liens_entrants).*4xx"],
     "server_error_5xx_inlinks": [r"5xx.*(inlinks|liens_entrants)", r"(inlinks|liens_entrants).*5xx"],
-    "redirect_chains": [r"redirect_chains?", r"chaines?_de_redirections?"],
+    "redirect_chains": [r"redirect_chains?", r"chaines?_(de_)?redirections?"],
     "insecure_content": [r"insecure_content", r"contenu_non_securise"],
     "images_missing_alt_inlinks": [r"missing_alt", r"alt_manquant", r"sans_(texte_)?alt"],
     "sitemaps": [r"^sitemaps?_(all|tout|tous)$"],
+    "structured_data": [r"structured_data", r"donnees_structurees"],
 }
 
 # nom canonique -> en-têtes possibles (normalisés)
@@ -63,7 +64,7 @@ ALIAS_COLONNES = {
     "unique_inlinks": ["unique_inlinks", "liens_entrants_uniques"],
     "size": ["size_bytes", "taille_octets", "size", "taille"],
     "redirect_url": ["redirect_url", "url_de_redirection"],
-    "hash": ["hash"],
+    "hash": ["hash", "hachage"],
     "near_dup": ["no_near_duplicates", "nb_de_quasi_doublons", "nombre_de_quasi_doublons",
                  "n_de_quasi_doublons"],
     "closest": ["closest_similarity_match", "correspondance_de_similarite_la_plus_proche"],
@@ -113,7 +114,8 @@ MOTS_CLES = {
     "redirect_url": [([_N("redirect", "redirection"), _N("url", "adresse")], _N("type", "final", "finale"))],
     "near_dup": [([_N("near", "quasi"), _N("duplicates", "duplicate", "doublons", "doublon")],
                   _N("closest", "proche", "similarity", "similarite"))],
-    "closest": [([_N("closest", "proche"), _N("similarity", "similarite")], set())],
+    "closest": [([_N("closest", "proche"), _N("similarity", "similarite")], set()),
+                ([_N("proche"), _N("quasi"), _N("doublon", "doublons")], _N("nombre", "nb"))],
     "rel_next": [([_N("rel"), _N("next", "suivant", "suiv"), _N("1")], set())],
     "rel_prev": [([_N("rel"), _N("prev", "precedent", "prec"), _N("1")], set())],
     "anchor": [([_N("anchor", "ancre")], set())],
@@ -261,10 +263,15 @@ def identifier(dossier_exports, details=None):
         trouves[code] = os.path.join(dossier_exports, fichier)
         details[fichier] = f"{code} (correspondance.json)"
     restants = []
-    for nom in sorted(os.listdir(dossier_exports)):
+    # Les sous-dossiers sont lus aussi : l'« Exportation multiple » de Screaming Frog en crée.
+    tous = []
+    for racine, _, fichiers in os.walk(dossier_exports):
+        for f in fichiers:
+            tous.append(os.path.relpath(os.path.join(racine, f), dossier_exports).replace(os.sep, "/"))
+    for nom in sorted(tous):
         if not nom.lower().endswith(".csv") or nom in manuel.values():
             continue
-        code = _par_nom(nom)
+        code = _par_nom(os.path.basename(nom))
         if code and code not in trouves:
             trouves[code] = os.path.join(dossier_exports, nom)
             details[nom] = f"{code} (nom du fichier)"
@@ -306,6 +313,9 @@ def diagnostic(dossier_exports, indispensables=None):
         "insecure_content": ["source", "destination"],
         "images_missing_alt_inlinks": ["source", "destination"],
     }
+    # L'export de l'onglet Images (une ligne par image, sans la page) est accepté à défaut des liens entrants
+    if "images_missing_alt_inlinks" in exports and exports["images_missing_alt_inlinks"].a("address"):
+        attendues["images_missing_alt_inlinks"] = ["address"]
     fichiers = {}
     for code, e in exports.items():
         fichiers[e.fichier] = {

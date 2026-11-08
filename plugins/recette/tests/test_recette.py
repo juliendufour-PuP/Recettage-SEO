@@ -119,6 +119,18 @@ EXPORTS = {
         "ancien": ["Adresse", "Type de contenu", "Code de statut", "Liens entrants uniques"],
         "fichiers": ("export (2).csv", "export (3).csv", "crawl ancien site.csv"),
     },
+    # En-têtes réels de Screaming Frog 24.3 en français (recette Montana, novembre 2026)
+    "fr_reel": {
+        "internal": ["Adresse", "Type de contenu", "Code HTTP", "Statut", "Indexabilité", "Statut d'indexabilité",
+                     "Title 1", "Largeur en pixels du Title 1", "Meta Description 1",
+                     "Largeur en pixels de la Meta Description 1", "H1-1", "H1-2", "Meta Robots 1",
+                     "Élément de lien en version canonique 1", "Nombre de mots", "Crawl profondeur",
+                     "Liens entrants uniques", "Taille (octets)", "Hachage", 'rel="next" 1', 'rel="prev" 1'],
+        "inlinks": ["Type", "Source", "Destination", "Ancrage", "Code de statut"],
+        "ancien": ["Adresse", "Type de contenu", "Code HTTP", "Liens entrants uniques"],
+        "fichiers": ("interne_tous.csv", "codes_de_réponse_internes,_erreur_client_(4xx)_liens_entrants.csv",
+                     "interne_tous.csv"),
+    },
 }
 
 
@@ -260,6 +272,11 @@ class TestRecette(unittest.TestCase):
 class TestRecetteFrancais(TestRecette):
     """Mêmes données, mêmes résultats attendus, exports d'un Screaming Frog en français."""
     LANGUE = "fr"
+
+
+class TestRecetteFrancaisReel(TestRecette):
+    """En-têtes relevés sur de vrais exports d'un Screaming Frog en français."""
+    LANGUE = "fr_reel"
 
 
 class TestBilan(unittest.TestCase):

@@ -346,11 +346,21 @@ def images(ctx):
     ex = ctx.exports.get("images_missing_alt_inlinks")
     if not ex:
         ctx.manque("IMG-01", "Export images_missing_alt_inlinks absent.")
-    else:
+    elif ex.a("source", "destination"):
         lignes = [{"Page": ex.val(l, "source"), "Image": ex.val(l, "destination")} for l in ex.lignes]
         ctx.conclure("IMG-01", lignes, ctx.preuve(ex, "source", "destination"),
                      details_ko=f"{len(lignes)} images sans alt, sur {len({l['Page'] for l in lignes})} pages. "
                                 "Les images décoratives peuvent garder un alt vide : à trier.")
+    elif ex.a("address"):
+        # Export de l'onglet Images (filtre « texte alt manquant ») : les images, sans les pages qui les affichent
+        lignes = [{"Image": ex.val(l, "address"), "Nombre de pages qui l'affichent": ex.val(l, "inlinks")}
+                  for l in ex.lignes]
+        ctx.conclure("IMG-01", lignes, ctx.preuve(ex, *[c for c in ("address", "inlinks") if ex.a(c)]),
+                     details_ko=f"{len(lignes)} images sans alt. Les pages concernées ne sont pas listées : "
+                                "l'export « Images sans texte alternatif, liens entrants » les donnerait. "
+                                "Les images décoratives peuvent garder un alt vide : à trier.")
+    else:
+        ctx.manque("IMG-01", f"Colonnes Source/Destination ou Adresse introuvables dans {ex.fichier}.")
     ia = ctx.ia
     if not ia.a("content_type", "size"):
         return ctx.manque("IMG-02", f"Colonnes Content Type ou Size introuvables dans {ia.fichier}.")
