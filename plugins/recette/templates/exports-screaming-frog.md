@@ -74,6 +74,6 @@ Crawl standard du site en ligne, sans authentification ni rendu JavaScript, robo
 
 Les URLs en 200 de cet export sont testées une à une sur la préprod pour les contrôles RED-01 à RED-05.
 
-## 4. Plus tard : crawl lancé par le plugin
+## 4. Crawl lancé par le plugin (MCP Screaming Frog)
 
-Screaming Frog peut être piloté sans interface (ligne de commande, ou son serveur MCP officiel). Les noms d'exports y sont des chaînes exactes. Le plugin ne les écrira pas en dur : il les lira sur le poste du TM avec `--help export-tabs`, `--help bulk-export` et `--help save-report`, pour fonctionner quelle que soit la langue installée.
+Si le serveur MCP officiel de Screaming Frog est branché sur Claude Code, `/recette:lancer` fait les deux crawls et les exports lui-même, avec ces réglages, puis rend ta configuration telle qu'elle était. L'installation et les règles sont dans `references/crawl-mcp.md`. Les noms d'exports ne sont pas écrits en dur : l'agent les lit dans le catalogue de ton poste, quelle que soit la langue installée.

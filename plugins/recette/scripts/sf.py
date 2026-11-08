@@ -198,6 +198,9 @@ class Export:
         except ValueError:
             return None
 
+    def __bool__(self):  # un export vide (zéro anomalie) existe quand même : jamais « absent »
+        return True
+
     def __len__(self):
         return len(self.lignes)
 

@@ -11,12 +11,13 @@ Plugin Claude Code utilisé par les traffic managers (TM) de PumpUp pour faire l
 
 - La fiche client : activité, priorités, cible, stratégie locale ou internationale, limitations techniques connues, pages stratégiques.
 - Le cahier des charges SEO du client.
-- Les exports Screaming Frog de la préprod et du site actuel en prod (le second est obligatoire, pour contrôler les redirections).
+- Les crawls Screaming Frog de la préprod et du site actuel en prod (le second est obligatoire, pour contrôler les redirections) : lancés par le plugin grâce au serveur MCP de Screaming Frog, ou exportés par le TM.
 - L'accès à la préprod, l'URL de son sitemap et de son robots.txt.
 - La checklist technique PumpUp, transformée en référentiel de 79 contrôles.
 
 ## Livrables
 
+- Deux classeurs .xlsx, ouverts en général dans Google Sheets.
 - Un fichier de travail pour le TM : chaque contrôle avec son statut, sa priorité de 1 à 3 et sa preuve, plus les tickets à créer (titre, description, résolution, résultat attendu, validation TM).
 - Une annexe : les listes complètes d'URLs à corriger.
 - Plus tard (Temps 2) : la création automatique des tickets dans l'outil du client.
@@ -32,11 +33,12 @@ Plugin Claude Code utilisé par les traffic managers (TM) de PumpUp pour faire l
 
 1. Le TM lance `/recette:lancer`.
 2. Cadrage : la fiche client devient le profil de recette (contrôles applicables, pages stratégiques, gabarits).
-3. Scripts : comptages sur les exports, croisement du sitemap et du crawl, test des anciennes URLs sur la préprod, analyse des gabarits.
-4. Navigateur : responsive, menu mobile, fil d'Ariane, pop-ins, Lighthouse.
-5. Cahier des charges : chaque exigence vérifiée une par une.
-6. Hors référentiel : les pistes de l'IA, toutes en hypothèses.
-7. Contrôle qualité : chaque chiffre recompté, chaque point relié à sa preuve.
-8. Livrables : le fichier de travail et l'annexe.
-9. Amélioration continue : mesure de la recette, comparaison avec les précédentes, propositions validées par le TM.
-10. Après la validation des tickets, le TM lance `/recette:retour` : les tickets rejetés et ajoutés mesurent la précision de la recette.
+3. Crawls : par le MCP Screaming Frog, ou exports du TM ; puis choix d'un gabarit par type de page.
+4. Scripts : comptages sur les exports, croisement du sitemap et du crawl, test des anciennes URLs sur la préprod, analyse des gabarits, Lighthouse.
+5. Navigateur : responsive, menu mobile, fil d'Ariane, pop-ins, HTML brut face au rendu JavaScript.
+6. Cahier des charges : chaque exigence vérifiée une par une.
+7. Hors référentiel : les pistes de l'IA, toutes en hypothèses.
+8. Contrôle qualité : chaque chiffre recompté, chaque point relié à sa preuve.
+9. Livrables : le fichier de travail et l'annexe, pour Google Sheets.
+10. Amélioration continue : mesure de la recette, comparaison avec les précédentes, propositions validées par le TM.
+11. Après la validation des tickets, le TM lance `/recette:retour` : les tickets rejetés et ajoutés mesurent la précision de la recette.

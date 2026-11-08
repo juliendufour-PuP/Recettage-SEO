@@ -1,6 +1,6 @@
 # Structure des livrables
 
-Deux fichiers Google Sheets, téléchargeables en .xlsx.
+Deux classeurs .xlsx générés par `recette.py livrables`, pensés pour Google Sheets : l'agent `recette-livrable` les dépose dans Google Drive convertis en Google Sheets si le TM le veut, sinon le TM les importe (glisser dans Drive, puis Ouvrir avec > Google Sheets). Les identifiants (T-001, H-001, CDC-01), les priorités et les nombres sont calculés par le script.
 
 ## Fichier 1 : base de travail du TM
 
@@ -50,6 +50,7 @@ Une ligne par ticket. Un ticket peut regrouper plusieurs contrôles quand la cor
 | URLs d'exemple | 3 à 5 URLs |
 | Lien annexe | Liste complète |
 | Type de preuve | Constat export ou Constat observé (jamais Hypothèse) |
+| Bloque la mise en ligne | oui (avec le motif) ou non |
 | Validation TM | À valider, Validé, Rejeté |
 | Commentaire TM | |
 
@@ -65,6 +66,20 @@ Les pistes hors référentiel ou non prouvées. Le TM les valide ici avant qu'el
 | Pour confirmer | L'information ou le test qui manque |
 | Priorité proposée (1-3) | |
 | Décision TM | À valider, Validé (devient un ticket), Rejeté |
+
+### Onglet Cahier des charges
+
+Une ligne par exigence du cahier des charges SEO, dans son ordre.
+
+| Colonne | Contenu |
+|---|---|
+| ID | CDC-01… |
+| Exigence | Telle qu'écrite dans le cahier des charges |
+| Source dans le cahier des charges | Section et page |
+| Statut | Conforme, Non conforme, Partiel, Non testable, Après mise en ligne |
+| Preuve | Contrôle lié, fichier et colonne, ou URL et extrait |
+| Contrôles liés | IDs du référentiel |
+| Ticket | ID du ticket, s'il y en a un |
 
 ### Onglet Après mise en ligne
 

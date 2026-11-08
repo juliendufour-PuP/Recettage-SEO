@@ -157,3 +157,32 @@ def bilan(dossier):
     with open(journal_p, "w", encoding="utf-8") as f:
         f.writelines(lignes)
     return sortie
+
+
+def noter_etape(dossier, etape, moment, agent=None, tokens=None, appels=None):
+    """Ajoute le début ou la fin d'une étape à donnees/metriques.json (heure prise par le script)."""
+    p = chemin(dossier, "donnees", "metriques.json")
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    data = {"etapes": []}
+    if os.path.exists(p):
+        with open(p, encoding="utf-8") as f:
+            data = json.load(f)
+    heure = datetime.now().isoformat(timespec="seconds")
+    entier = lambda v: int(v) if v not in (None, "", "-") else None
+    if moment == "debut":
+        data["etapes"].append({"etape": etape, "agent": agent, "debut": heure, "fin": None,
+                               "tokens": None, "appels_outils": None})
+    elif moment == "fin":
+        ouvertes = [e for e in data["etapes"] if e["etape"] == etape and not e.get("fin")]
+        if not ouvertes:
+            raise SystemExit(f"Étape « {etape} » jamais commencée dans metriques.json.")
+        e = ouvertes[-1]
+        e["fin"] = heure
+        e["tokens"], e["appels_outils"] = entier(tokens), entier(appels)
+        if agent:
+            e["agent"] = agent
+    else:
+        raise SystemExit("Moment attendu : debut ou fin.")
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return {"etape": etape, moment: heure}

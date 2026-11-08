@@ -194,7 +194,7 @@ def _plan(dossier, profil):
         return {}
     p = chemin(dossier, nom)
     if not os.path.exists(p):
-        raise SystemExit(f"Plan de redirections introuvable : {p}")
+        return None  # plan prévu dans le profil mais pas fourni : les contrôles le disent
     lignes = lire_csv_simple(p)
     plan = {}
     for l in lignes:
@@ -228,6 +228,11 @@ def redirections(dossier, limite=None):
     html = [l for l in ex.lignes if ex.num(l, "status_code") == 200 and
             (not ex.a("content_type") or "html" in ex.val(l, "content_type").lower())]
     plan = _plan(dossier, ctx.profil)
+    note_plan = ""
+    if plan is None:
+        plan = {}
+        note_plan = (f". Plan de redirections « {ctx.profil.get('plan_redirections')} » absent du dossier : "
+                     "cibles non comparées au plan")
     limite = limite or int(ctx.profil.get("max_urls_redirections", 5000))
     a_tester = html[:limite]
     accueil = nettoyer_url(ctx.preprod + "/")
@@ -326,7 +331,7 @@ def redirections(dossier, limite=None):
         ctx.ann.ajouter(onglet, ids, ligne, ex.fichier)
     partiel = len(html) > len(a_tester)
     portee = f"{len(a_tester)} URLs en 200 de l'ancien site testées sur la préprod" + (
-        f" (sur {len(html)}, limite {limite})" if partiel else "")
+        f" (sur {len(html)}, limite {limite})" if partiel else "") + note_plan
     preuve = f"{ex.fichier} + requêtes sur {ctx.preprod}"
     for idc, cas, libelle in (("RED-01", red1, "sans redirection ou vers une cible différente du plan"),
                               ("RED-02", red2, "vers une cible en erreur ou non indexable"),

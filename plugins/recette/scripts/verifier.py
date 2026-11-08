@@ -77,3 +77,24 @@ def verifier(dossier):
     with open(chemin(dossier, "donnees", "verification.json"), "w", encoding="utf-8") as f:
         json.dump(rapport, f, ensure_ascii=False, indent=2)
     return rapport
+
+
+# Contrôles laissés aux agents : recette-live (navigateur et HTML des pages),
+# recette-expert (jugement sur les données préparées, documents).
+POUR_LIVE = {"JS-01", "PAG-02", "PAG-04", "PAG-05", "PAG-06"}
+
+
+def repartition(dossier):
+    res = Resultats(dossier)
+    sortie = {"recette-live": [], "recette-expert": []}
+    for idc, c in res.ref.items():
+        if idc in res.data:
+            continue
+        if "navigateur" in c["source_donnee"] or idc in POUR_LIVE:
+            sortie["recette-live"].append(idc)
+        else:
+            sortie["recette-expert"].append(idc)
+    a_reprendre = {idc: r["details"] for idc, r in res.data.items()
+                   if r["statut"] in ("Partiel", "Non testable") and r.get("source") != "preparer"}
+    sortie["a_reprendre_si_possible"] = a_reprendre
+    return sortie

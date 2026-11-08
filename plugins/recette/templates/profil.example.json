@@ -27,6 +27,7 @@
     "blog": true
   },
   "plan_redirections": "plan-redirections.csv",
+  "sf": {"config": "", "auth_config": ""},
   "seuils": {"url_max": null, "mots_min": null, "image_ko_max": null, "profondeur_max": null},
   "ssl_verifie": true,
   "requetes_paralleles": 4,
