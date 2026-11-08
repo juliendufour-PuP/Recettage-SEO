@@ -1,0 +1,35 @@
+{
+  "_lisez_moi": "Copier en profil.json à la racine du dossier de recette. Rempli à partir de la fiche client. Les scripts ne lisent que ce fichier.",
+  "client": "Exemple",
+  "preprod": "https://preprod.exemple.fr",
+  "ancien_site": "https://www.exemple.fr",
+  "sitemap": "https://preprod.exemple.fr/sitemap_index.xml",
+  "robots": "https://preprod.exemple.fr/robots.txt",
+  "pages_strategiques": [
+    {"nom": "Accueil", "url": "https://preprod.exemple.fr/", "ancienne_url": "https://www.exemple.fr/"},
+    {"nom": "Service principal", "url": "https://preprod.exemple.fr/services/renovation/", "ancienne_url": "https://www.exemple.fr/renovation.html"}
+  ],
+  "gabarits": [
+    {"type": "accueil", "url": "https://preprod.exemple.fr/"},
+    {"type": "service", "url": "https://preprod.exemple.fr/services/renovation/"},
+    {"type": "article", "url": "https://preprod.exemple.fr/blog/un-article/"},
+    {"type": "liste blog", "url": "https://preprod.exemple.fr/blog/"},
+    {"type": "contact", "url": "https://preprod.exemple.fr/contact/"}
+  ],
+  "applicabilite": {
+    "international": false,
+    "local": true,
+    "pagination": true,
+    "filtres": false,
+    "moteur_interne": false,
+    "ecommerce": false,
+    "avis": false,
+    "blog": true
+  },
+  "plan_redirections": "plan-redirections.csv",
+  "seuils": {"url_max": null, "mots_min": null, "image_ko_max": null, "profondeur_max": null},
+  "ssl_verifie": true,
+  "requetes_paralleles": 4,
+  "delai_requetes": 0.2,
+  "max_urls_redirections": 5000
+}

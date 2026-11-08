@@ -8,7 +8,7 @@ Un plugin Claude Code qui fait la recette SEO d'un site en préproduction après
 
 Trois règles : aucun chiffre inventé (tout comptage vient d'un script), les constats prouvés sont séparés des hypothèses, et une hypothèse ne devient un ticket qu'une fois validée par le TM.
 
-> **État : en construction (v0.1).** Le référentiel des contrôles et les gabarits sont prêts. Les scripts, les agents et la commande `/recette:lancer` arrivent dans les prochaines versions.
+> **État : en construction (v0.2).** Le référentiel des contrôles, les gabarits et les scripts de comptage sont prêts (56 contrôles sur 79 calculés automatiquement). Les agents et la commande `/recette:lancer` arrivent dans les prochaines versions.
 
 ---
 
@@ -48,7 +48,7 @@ Redémarre Claude Code.
 
 ## Préparer une recette
 
-1. Copie `plugins/recette/templates/fiche-client.md` dans un dossier `Recette-SEO-<Client>` et remplis-la.
+1. Copie `plugins/recette/templates/fiche-client.md` dans un dossier `Recette-SEO-<Client>` et remplis-la. En attendant les agents, reporte-la dans `profil.json` (modèle `profil.example.json`).
 2. Fais les crawls Screaming Frog avec les réglages de `plugins/recette/templates/exports-screaming-frog.md` : la préprod et le site actuel en prod. Dépose les exports dans `exports/preprod/` et `exports/ancien-site/`.
 3. Si la préprod est protégée par un mot de passe, copie `acces-preprod.local.example.json` en `acces-preprod.local.json` et remplis-le. Ce fichier reste sur ton poste.
 4. Mets le cahier des charges SEO, l'arborescence cible et le plan de redirections dans le dossier.
@@ -59,4 +59,6 @@ Redémarre Claude Code.
 |---|---|
 | `plugins/recette/references/referentiel-controles.csv` | Les contrôles : la checklist technique PumpUp, les contrôles de refonte (redirections) et les ajouts proposés, avec leur priorité, leur méthode et ce qui les fait passer en KO |
 | `plugins/recette/references/regles-recette.md` | Les règles communes : preuves, statuts, priorité, interdiction des chiffres inventés |
-| `plugins/recette/templates/` | Fiche client, exports Screaming Frog, structure des livrables, modèle d'accès à la préprod |
+| `plugins/recette/templates/` | Fiche client, profil pour les scripts, exports Screaming Frog, structure des livrables, modèle d'accès à la préprod |
+| `plugins/recette/scripts/` | Scripts de comptage et de requêtes (voir son README) |
+| `plugins/recette/tests/` | Jeu d'essai avec une fausse préprod locale |

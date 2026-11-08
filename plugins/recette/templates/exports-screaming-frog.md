@@ -2,7 +2,9 @@
 
 > Les noms de menus correspondent à Screaming Frog SEO Spider en version récente (interface en anglais). Ils peuvent changer légèrement selon la version et la langue : au premier usage, vérifie-les et corrige ce fichier si besoin. Les exports peuvent être en français ou en anglais, les scripts lisent les deux.
 
-Dépose tous les fichiers dans `Recette-SEO-<Client>/exports/preprod/` et `Recette-SEO-<Client>/exports/ancien-site/`, sans les renommer.
+Dépose tous les fichiers dans `Recette-SEO-<Client>/exports/preprod/` et `Recette-SEO-<Client>/exports/ancien-site/`, sans les renommer. Format CSV uniquement.
+
+**Indispensables pour les scripts :** `internal_all` (préprod et ancien site), les trois exports d'inlinks 3xx, 4xx et 5xx, `redirect_chains`, `insecure_content` et `images_missing_alt_inlinks`. Les autres servent aux agents. Un export manquant fait passer ses contrôles en « Non testable » ; rien n'est deviné. Si un fichier n'est pas reconnu par son nom, déclare-le dans `exports/preprod/correspondance.json`, par exemple `{"internal_all": "mon-export.csv"}`.
 
 ## 1. Réglages du crawl de la préprod
 
