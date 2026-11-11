@@ -16,7 +16,8 @@ Commandes, dans l'ordre conseillé :
     langues       redirections selon la langue (site international)
     verifier      cohérence résultats / annexe / référentiel
     tout          toutes les commandes ci-dessus
-    lighthouse    CWV-01 : Lighthouse mobile sur l'accueil et chaque gabarit (Node.js et Chrome)
+    lighthouse    CWV-01 : Lighthouse mobile sur l'accueil et chaque gabarit (Node.js et Chrome),
+                  pour le contrôle post-refonte : jamais sur une préprod
     repartition   contrôles encore sans résultat, répartis entre recette-live et recette-expert
     poser         résultats des agents (donnees/resultats-agents/*.json), puis verifier
     controler     contrôle qualité mécanique des tickets, hypothèses et cahier des charges
@@ -25,6 +26,8 @@ Commandes, dans l'ordre conseillé :
     retour        onglet Tickets du classeur validé par le TM (retour-tm/*.xlsx) -> retour-tm/tickets.csv
     etape         python recette.py etape <dossier> <nom> debut|fin [agent] [tokens] [appels d'outils]
                   durée et coût de chaque étape, dans donnees/metriques.json
+    paquet        dossier préparé par l'application Audit : <dossier>-retour.zip à y réimporter
+                  (sans l'accès à la préprod ni les exports)
     bilan         mesures de la recette et journal local, pour l'agent recette-amelioration
                   (à lancer en fin de processus, hors « tout »)
 """
@@ -42,6 +45,7 @@ import controles_web  # noqa: E402
 import lighthouse  # noqa: E402
 import livrables  # noqa: E402
 import mcp_exports  # noqa: E402
+import paquet  # noqa: E402
 import poser  # noqa: E402
 import qualite  # noqa: E402
 import sf  # noqa: E402
@@ -116,6 +120,8 @@ def commande(nom, dossier):
         return controles_web.langues(dossier)
     if nom == "verifier":
         return verifier.verifier(dossier)
+    if nom == "paquet":
+        return paquet.paquet(dossier)
     if nom == "bilan":
         return bilan.bilan(dossier)
     raise SystemExit(f"Commande inconnue : {nom}\n{__doc__}")

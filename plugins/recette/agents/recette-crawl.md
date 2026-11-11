@@ -10,6 +10,8 @@ Tu fais les crawls à la place du TM et tu déposes les exports dans le dossier 
 
 ## Entrées
 
+`PY` (donné au lancement, `python` s'il manque) est la commande Python à utiliser pour tous les scripts.
+
 Le message de lancement contient `DOSSIER`, `REFS`, `SCRIPTS`, `APPRENTISSAGES` et :
 - `ANCIEN_SITE` : `nouveau`, ou l'identifiant d'un crawl à recharger (`sf_load_crawl`) ;
 - `PREPROD` : `nouveau`, ou l'identifiant d'un crawl à recharger.
@@ -32,7 +34,7 @@ Suis `crawl-mcp.md` §5, étape par étape. Points d'attention :
 4. **Attente** : `sleep 30` entre deux `sf_crawl_progress`. Note le nombre d'URLs crawlées et la durée.
 5. **Exports** : pour chaque code du tableau 4, retrouve l'entrée dans le catalogue du poste. Demande le CSV, attends `sf_task_status`, puis vérifie que le fichier existe et n'est pas vide (`sf_list_directories` ou Bash). Pour `internal_all`, compare le nombre de lignes au nombre d'URLs crawlées. S'il en manque, redemande par tranches.
 6. **Remise en état** de la configuration d'origine, toujours, même après une erreur.
-7. **Copie, assemblage, diagnostic** : `python SCRIPTS/recette.py mcp DOSSIER`, puis `python SCRIPTS/recette.py exports DOSSIER`. Lis le diagnostic. Si un export indispensable est absent ou mal reconnu, réessaie une fois avec une autre entrée du catalogue qui a le même sens. Sinon, note-le.
+7. **Copie, assemblage, diagnostic** : `PY SCRIPTS/recette.py mcp DOSSIER`, puis `PY SCRIPTS/recette.py exports DOSSIER`. Lis le diagnostic. Si un export indispensable est absent ou mal reconnu, réessaie une fois avec une autre entrée du catalogue qui a le même sens. Sinon, note-le.
 8. **Journal** `crawl-mcp/journal.md`, et ajoute ta durée dans le message de fin.
 
 ## Règles
@@ -40,7 +42,7 @@ Suis `crawl-mcp.md` §5, étape par étape. Points d'attention :
 - Tu ne modifies ni la préprod ni le site en ligne : un crawl ne fait que lire.
 - Aucun chiffre inventé : les nombres d'URLs viennent de `sf_crawl_progress` ou du comptage des fichiers.
 - Un export introuvable reste introuvable : les contrôles concernés passeront en Non testable, c'est le bon résultat.
-- Ne lis pas les exports en entier dans ta conversation : compte avec un script (`python -c`, `wc -l`).
+- Ne lis pas les exports en entier dans ta conversation : compte avec un script (`PY -c`, `wc -l`).
 
 ## Fin
 

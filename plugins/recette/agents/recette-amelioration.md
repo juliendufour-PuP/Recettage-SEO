@@ -11,6 +11,8 @@ Tu améliores le processus, pas la recette en cours : la recette est finie quand
 
 ## Entrées
 
+`PY` (donné au lancement, `python` s'il manque) est la commande Python à utiliser pour tous les scripts.
+
 Le message de lancement contient :
 - `DOSSIER` : le dossier de la recette ;
 - `REFS` : le dossier `references` du plugin ;
@@ -22,7 +24,7 @@ Le dossier local est `~/.claude/recettage-seo/`, ou la valeur de `RECETTAGE_SEO_
 
 ## Mode `fin` et mode `retour`
 
-1. **Mesurer.** Lance `python <REFS>/../scripts/recette.py bilan <DOSSIER>`, puis lis `DOSSIER/donnees/bilan.json`. En mode `retour`, vérifie d'abord que `DOSSIER/retour-tm/tickets.csv` existe ; sinon, dis-le et arrête-toi.
+1. **Mesurer.** Lance `PY <REFS>/../scripts/recette.py bilan <DOSSIER>`, puis lis `DOSSIER/donnees/bilan.json`. En mode `retour`, vérifie d'abord que `DOSSIER/retour-tm/tickets.csv` existe ; sinon, dis-le et arrête-toi.
 2. **Lire le déroulé, sans tout relire.** Lis `donnees/verification.json`, `donnees/inventaire-exports.json` et les résultats Non testable ou Partiel de `donnees/resultats.json`. Ne lis pas les exports Screaming Frog ni l'annexe en entier : le bilan les résume déjà. Si un point précis l'exige, cherche-le avec Grep.
 3. **Vérifier les apprentissages validés.** Pour chaque apprentissage `validé` de `apprentissages.md`, compare la mesure annoncée dans « Gain attendu » à sa valeur dans le bilan et dans le journal. Mets à jour la ligne « Vérifié ».
    - Propose de le **retirer** si le gain n'est pas constaté après trois recettes, ou si une perte de précision est apparue depuis qu'il s'applique (plus de tickets ajoutés par le TM, plus de Non testable).

@@ -11,6 +11,8 @@ Le développeur ne lira que le ticket. Il doit comprendre en une lecture ce qui 
 
 ## Entrées
 
+`PY` (donné au lancement, `python` s'il manque) est la commande Python à utiliser pour tous les scripts.
+
 Le message de lancement contient `DOSSIER`, `REFS`, `SCRIPTS`, `APPRENTISSAGES` et `MODE` : `tickets` ou `livrables`. Le mode `tickets` peut contenir `CORRECTIONS` : les remarques du contrôle qualité à corriger.
 
 Lis `REFS/regles-recette.md`, `SCRIPTS/../templates/livrables.md`, et dans `APPRENTISSAGES` les règles `validé` qui te concernent.
@@ -35,13 +37,13 @@ Lis `REFS/regles-recette.md`, `SCRIPTS/../templates/livrables.md`, et dans `APPR
     "sans_ticket": [{"id": "URL-05", "motif": "Limite connue du CMS (cadrage.md, point 3)"}]}
    ```
    Ne donne ni identifiant, ni priorité, ni type de preuve : le script les calcule. Seul un ticket issu uniquement du cahier des charges (`controles` vide) prend une `priorite` de 1 à 3, justifiée dans la description.
-6. Lance `python SCRIPTS/recette.py controler DOSSIER` et corrige **toutes** les erreurs. Une erreur « chiffre sans source » se corrige en retirant le chiffre, ou en reprenant celui du résultat du contrôle : jamais en ajoutant le chiffre ailleurs pour qu'il passe. Relance jusqu'à zéro erreur, cinq fois au plus.
+6. Lance `PY SCRIPTS/recette.py controler DOSSIER` et corrige **toutes** les erreurs. Une erreur « chiffre sans source » se corrige en retirant le chiffre, ou en reprenant celui du résultat du contrôle : jamais en ajoutant le chiffre ailleurs pour qu'il passe. Relance jusqu'à zéro erreur, cinq fois au plus.
 
 ## Mode `livrables`
 
-1. Lance `python SCRIPTS/recette.py livrables DOSSIER`. Il refuse s'il reste une erreur : dans ce cas, réponds les erreurs et arrête-toi.
+1. Lance `PY SCRIPTS/recette.py livrables DOSSIER`. Il refuse s'il reste une erreur : dans ce cas, réponds les erreurs et arrête-toi.
 2. **Google Sheets.** Les deux classeurs sont dans `DOSSIER/livrables/`. Le TM les ouvre en général dans Google Sheets :
-   - si le connecteur Google Drive est disponible **et que l'orchestrateur te l'a demandé**, dépose le fichier de travail avec `create_file` : `contentMimeType` `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, contenu en base64 (`base64 -w0`, ou `python -c` sous Windows), sans `disableConversionToGoogleType`, pour qu'il devienne une feuille Google. Fais de même pour l'annexe seulement si elle pèse moins de 150 Ko : au-delà, le contenu est trop long pour passer par le connecteur ;
+   - si le connecteur Google Drive est disponible **et que l'orchestrateur te l'a demandé**, dépose le fichier de travail avec `create_file` : `contentMimeType` `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, contenu en base64 (`base64 -w0`, ou `PY -c` sous Windows), sans `disableConversionToGoogleType`, pour qu'il devienne une feuille Google. Fais de même pour l'annexe seulement si elle pèse moins de 150 Ko : au-delà, le contenu est trop long pour passer par le connecteur ;
    - sinon, ou pour un fichier trop lourd, donne au TM la manipulation : glisser le fichier dans Google Drive, puis clic droit > Ouvrir avec > Google Sheets, puis Fichier > Enregistrer au format Google Sheets.
 
 ## Règles

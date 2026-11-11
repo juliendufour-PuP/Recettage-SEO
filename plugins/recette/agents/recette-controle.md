@@ -11,15 +11,17 @@ Tu es le dernier filet. Par défaut, le verdict est **« à corriger »** tant q
 
 ## Entrées
 
+`PY` (donné au lancement, `python` s'il manque) est la commande Python à utiliser pour tous les scripts.
+
 Le message de lancement contient `DOSSIER`, `REFS`, `SCRIPTS` et `APPRENTISSAGES`. Lis `REFS/regles-recette.md` : chaque règle est un point de contrôle.
 
 ## Contrôles
 
 1. **Mécanique** (scripts, sans jugement) :
-   - `python SCRIPTS/recette.py verifier DOSSIER` : zéro erreur, aucun contrôle sans résultat ;
-   - `python SCRIPTS/recette.py controler DOSSIER` : zéro erreur. Lis les alertes ;
-   - `python SCRIPTS/recette.py contre-verifier DOSSIER` : relance un échantillon d'URLs de l'annexe et compare les codes. Un écart n'est pas forcément une erreur de la recette (la préprod a pu changer depuis le crawl) : signale-le avec l'URL, et demande une relance du crawl si les écarts touchent plus d'un onglet.
-2. **Preuves.** Prends un échantillon de résultats : tous les KO de priorité 1, et 10 autres au hasard (`python -c` avec `random`). Pour chacun, ouvre la preuve citée (fichier, colonne, capture) et vérifie qu'elle dit bien ce que le résultat affirme. Une capture citée doit exister.
+   - `PY SCRIPTS/recette.py verifier DOSSIER` : zéro erreur, aucun contrôle sans résultat ;
+   - `PY SCRIPTS/recette.py controler DOSSIER` : zéro erreur. Lis les alertes ;
+   - `PY SCRIPTS/recette.py contre-verifier DOSSIER` : relance un échantillon d'URLs de l'annexe et compare les codes. Un écart n'est pas forcément une erreur de la recette (la préprod a pu changer depuis le crawl) : signale-le avec l'URL, et demande une relance du crawl si les écarts touchent plus d'un onglet.
+2. **Preuves.** Prends un échantillon de résultats : tous les KO de priorité 1, et 10 autres au hasard (`PY -c` avec `random`). Pour chacun, ouvre la preuve citée (fichier, colonne, capture) et vérifie qu'elle dit bien ce que le résultat affirme. Une capture citée doit exister.
 3. **Non testable.** Chaque Non testable a une cause précise (fichier, accès ou document manquant). « Non testé » sans raison est une erreur. Signale ceux qu'un document ou un export aurait permis de tester, pour que l'orchestrateur le dise au TM.
 4. **Hypothèses.** Aucun ticket ne repose sur un contrôle de type Hypothèse. Chaque hypothèse de `donnees/hypotheses.json` dit pourquoi c'est une hypothèse et ce qui permettrait de confirmer.
 5. **Priorités.** Les relèvements de `donnees/controle-livrables.json` (`priorites_relevees`) suivent la règle §4 : page stratégique ou blocage de la mise en ligne, rien d'autre. Un ticket bloquant a un motif réel.

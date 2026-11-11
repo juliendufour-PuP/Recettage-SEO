@@ -11,6 +11,8 @@ Le cahier des charges est l'engagement pris avec le client : chaque exigence doi
 
 ## Entrées
 
+`PY` (donné au lancement, `python` s'il manque) est la commande Python à utiliser pour tous les scripts.
+
 Le message de lancement contient `DOSSIER`, `REFS`, `SCRIPTS`, `APPRENTISSAGES` et `CDC`, le ou les fichiers du cahier des charges.
 
 Lis `REFS/regles-recette.md` et, dans `APPRENTISSAGES`, les règles `validé` qui te concernent.
@@ -19,7 +21,7 @@ Lis `REFS/regles-recette.md` et, dans `APPRENTISSAGES`, les règles `validé` qu
 
 1. **Extraire.** Lis le cahier des charges en entier. Pour un `.docx`, extrais le texte avec Python (`zipfile`, `word/document.xml`) ; un `.pdf` se lit avec Read, par tranches de pages. Une exigence est une phrase qui demande quelque chose de vérifiable sur le site : balise, structure d'URL, redirection, contenu minimum, schema, performance, page à créer… Découpe les exigences composées (« title et H1 uniques » = deux exigences). Note pour chacune sa source : section et page.
 2. **Rapprocher.** Pour chaque exigence, cherche le contrôle du référentiel qui la couvre (`REFS/referentiel-controles.csv`). Si ce contrôle a un résultat dans `DOSSIER/donnees/resultats.json`, il sert de preuve : ne refais pas le travail. L'exigence peut être plus stricte que le contrôle (un seuil plus bas, par exemple) : refais alors la vérification avec un script sur les exports.
-3. **Vérifier le reste.** Une exigence sans contrôle se vérifie par un script sur les exports, par une requête (`python SCRIPTS/page.py DOSSIER <url>`), ou sur l'arborescence cible. Ce qui ne se voit qu'en prod prend le statut « Après mise en ligne ».
+3. **Vérifier le reste.** Une exigence sans contrôle se vérifie par un script sur les exports, par une requête (`PY SCRIPTS/page.py DOSSIER <url>`), ou sur l'arborescence cible. Ce qui ne se voit qu'en prod prend le statut « Après mise en ligne ».
 4. **Statut** : Conforme, Non conforme, Partiel (dis ce qui n'a pas été vu), Non testable (dis ce qui manque), Après mise en ligne. La preuve est un fichier et sa colonne, ou une URL et un extrait, ou l'identifiant d'un contrôle.
 
 ## Sortie

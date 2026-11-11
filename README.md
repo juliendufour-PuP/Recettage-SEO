@@ -41,39 +41,35 @@ Une règle ne bouge pas : aucune amélioration ne peut supprimer un contrôle, b
 
 ## Installation (une fois par poste)
 
-### 1. Prérequis
+### Le plus simple : depuis le site audit
 
-- **Claude Code** installé et connecté avec ton compte PumpUp.
-- **Python 3.10 ou plus récent** : https://www.python.org. Sous Windows, coche « Add Python to PATH » à l'installation. Aucun paquet à installer.
-- **Node.js** : https://nodejs.org, pour le navigateur piloté et Lighthouse.
-- **Google Chrome**, pour Lighthouse. À défaut, le Chromium installé par Playwright est utilisé.
+Sur audit.preprod-lab.com, clique sur « Installer sur mon poste » : tu télécharges un dossier avec une notice d'une page. En résumé :
+
+1. Installe l'application **Claude** (https://claude.ai/download) et connecte-toi avec ton compte PumpUp.
+2. Dans Claude, onglet **Code**, colle cette ligne et valide :
+   ```
+   /plugin install recette --marketplace juliendufour-PuP/Recettage-SEO
+   ```
+3. C'est tout. **Python n'est pas à installer** : au premier lancement, la recette utilise celui du poste ou installe un Python privé pour elle seule (sans droits administrateur). **Node.js n'est pas nécessaire** pour une recette préparée par le site audit : les captures du navigateur sont faites par le serveur.
+
+### Installation complète (recette entièrement sur le poste)
+
+Pour faire aussi les crawls et le navigateur sur ton poste :
+
 - **Screaming Frog SEO Spider avec licence** : la version gratuite s'arrête à 500 URLs, ne fait pas le rendu JavaScript et n'a pas de serveur MCP.
-- **Connecteur Google Drive** activé dans Claude (claude.ai > Paramètres > Connecteurs), pour déposer les livrables en Google Sheets. Facultatif : sans lui, tu importes les deux fichiers toi-même.
+- **Node.js** (https://nodejs.org), puis le navigateur piloté :
+  ```bash
+  claude mcp add playwright -s user -- npx @playwright/mcp@latest
+  ```
+  Sans lui, les contrôles du navigateur passent en Non testable, sauf si le dossier vient du site audit.
+- **Connecteur Google Drive** activé dans Claude (claude.ai > Paramètres > Connecteurs), pour déposer les livrables en Google Sheets. Facultatif.
+- **Brancher Screaming Frog** (conseillé) : dans Screaming Frog, Fichier > Paramètres > Serveur MCP, active Node.js, puis « Démarrer le serveur MCP ». Ensuite :
+  ```bash
+  claude mcp add --transport http screaming-frog http://localhost:11435/mcp -s user
+  ```
+  Remplace `11435` par le port affiché. Laisse Screaming Frog ouvert pendant la recette. Le détail est dans `plugins/recette/references/crawl-mcp.md`. Sans MCP, tu fais les crawls à la main (`plugins/recette/templates/exports-screaming-frog.md`).
 
-### 2. Installer le navigateur piloté (Playwright)
-
-```bash
-claude mcp add playwright -s user -- npx @playwright/mcp@latest
-```
-
-### 3. Brancher Screaming Frog (conseillé)
-
-Dans Screaming Frog : Fichier > Paramètres > Serveur MCP, active Node.js, puis clique sur « Démarrer le serveur MCP ». Ensuite :
-
-```bash
-claude mcp add --transport http screaming-frog http://localhost:11435/mcp -s user
-```
-
-Remplace `11435` par le port affiché dans Screaming Frog. Laisse Screaming Frog ouvert pendant la recette. Le détail, et ce que le plugin a le droit d'y faire, est dans `plugins/recette/references/crawl-mcp.md`. Sans MCP, la recette marche aussi : tu fais les crawls à la main (`plugins/recette/templates/exports-screaming-frog.md`).
-
-### 4. Installer le plugin
-
-Dans Claude Code :
-```
-/plugin marketplace add juliendufour-PuP/Recettage-SEO
-/plugin install recette@recettage-seo
-```
-Redémarre Claude Code.
+Les performances (Lighthouse, Core Web Vitals) ne se mesurent pas sur une préprod : elles se contrôlent une fois le site en ligne, au contrôle post-refonte.
 
 ### Mettre à jour
 

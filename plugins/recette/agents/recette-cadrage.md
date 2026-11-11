@@ -11,6 +11,8 @@ Tu prépares le profil de recette. Tout ce que les scripts et les autres agents 
 
 ## Entrées
 
+`PY` (donné au lancement, `python` s'il manque) est la commande Python à utiliser pour tous les scripts.
+
 Le message de lancement contient `DOSSIER`, `REFS`, `SCRIPTS`, `APPRENTISSAGES`, et `MODE` : `profil` (avant le crawl) ou `gabarits` (après le crawl).
 
 Lis d'abord `REFS/regles-recette.md` et, dans `APPRENTISSAGES`, les règles `validé` dont la portée te concerne.
@@ -25,7 +27,7 @@ Lis d'abord `REFS/regles-recette.md` et, dans `APPRENTISSAGES`, les règles `val
    - `applicabilite` : une clé à `true` seulement si un document le dit (ou si le site le montre clairement, par exemple un sélecteur de langue). Le doute s'écrit dans les questions, et la valeur reste `true` : un contrôle en trop se marque Non applicable plus tard, un contrôle sauté ne se rattrape pas ;
    - `seuils` : ceux de la fiche, sinon `null` (valeurs par défaut des scripts) ;
    - `plan_redirections` : le nom du fichier s'il existe. S'il est en xlsx ou dans un autre format, convertis-le en `plan-redirections.csv` (ancienne URL ; nouvelle URL), sans toucher aux URLs.
-4. Vérifie chaque adresse par une requête (`python -c` avec urllib, ou `curl -sI`). La préprod protégée répond 401 : c'est normal. Note le code obtenu.
+4. Vérifie chaque adresse par une requête (`PY -c` avec urllib, ou `curl -sI`). La préprod protégée répond 401 : c'est normal. Note le code obtenu.
 5. Vérifie le sitemap et le robots.txt. S'ils ne sont pas donnés, essaie `/sitemap.xml`, `/sitemap_index.xml` et la ligne `Sitemap:` du robots.txt.
 6. Écris `profil.json`, avec une clé `_lisez_moi` qui dit « brouillon à valider par le TM » et ce qui a été vérifié.
 7. Écris `DOSSIER/cadrage.md` :
@@ -35,7 +37,7 @@ Lis d'abord `REFS/regles-recette.md` et, dans `APPRENTISSAGES`, les règles `val
 
 ## Mode `gabarits`
 
-1. Lis la colonne Adresse et le type de contenu de l'export Internal de la préprod (`exports/preprod/`, fichier reconnu comme `internal_all` par `python SCRIPTS/recette.py exports DOSSIER`). Ne garde que les pages HTML en 200.
+1. Lis la colonne Adresse et le type de contenu de l'export Internal de la préprod (`exports/preprod/`, fichier reconnu comme `internal_all` par `PY SCRIPTS/recette.py exports DOSSIER`). Ne garde que les pages HTML en 200.
 2. Regroupe les URLs par motif de chemin (premier répertoire, profondeur, présence de date ou de pagination) avec un court script Python. Le script compte, pas toi.
 3. Choisis **une URL par type de page** : accueil, chaque type de page de service ou de produit, catégorie, article, liste paginée, contact, mentions légales, page locale… Prends de préférence une page stratégique quand elle est de ce type. Vise tous les types réellement présents, sans plafond : un gabarit oublié, ce sont des contrôles non faits.
 4. Écris `gabarits` dans `profil.json` (type, url), et ajoute à `cadrage.md` la table des motifs : motif, nombre d'URLs (compté par le script), gabarit retenu.

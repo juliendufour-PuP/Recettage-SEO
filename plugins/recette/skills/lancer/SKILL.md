@@ -13,19 +13,25 @@ Tu es le chef d'orchestre. Tu ne fais pas les contrôles toi-même : tu lances l
 - `PLUGIN` = deux niveaux au-dessus du dossier de ce skill (`<dossier de ce skill>/../..`), en chemin absolu. `REFS` = `PLUGIN/references`, `SCRIPTS` = `PLUGIN/scripts`, `TEMPLATES` = `PLUGIN/templates`. Vérifie que `REFS/regles-recette.md` existe.
 - `DOSSIER` = `<répertoire de travail>/Recette-SEO-<Client>` (nom sans espace ni accent), sauf si le TM donne un autre chemin.
 - `APPRENTISSAGES` = `~/.claude/recettage-seo/apprentissages.md` (ou `$RECETTAGE_SEO_HOME/apprentissages.md`).
-- `PY` = la commande Python 3.10+ du poste : `python`, sinon `python3`, sinon `py -3`.
+- `PY` = la commande Python 3.10+, donnée par la dernière ligne (`PY=…`) du script d'installation de l'étape 0. Le TM n'a jamais à installer Python lui-même.
 - Agents (selon l'installation, avec le préfixe `recette:`) : `recette-cadrage`, `recette-crawl`, `recette-live`, `recette-expert`, `recette-cdc`, `recette-livrable`, `recette-controle`, `recette-amelioration`.
-- Chaque lancement d'agent contient au minimum `DOSSIER=`, `REFS=`, `SCRIPTS=`, `APPRENTISSAGES=` (chemins absolus), le `MODE` s'il y en a un, et une phrase de consigne.
+- Chaque lancement d'agent contient au minimum `DOSSIER=`, `REFS=`, `SCRIPTS=`, `APPRENTISSAGES=` (chemins absolus), `PY=`, le `MODE` s'il y en a un, et une phrase de consigne.
 - **Mesures** : au début et à la fin de chaque étape, lance `PY SCRIPTS/recette.py etape DOSSIER <étape> debut` puis `... <étape> fin <agent> <tokens> <appels d'outils>`. Les tokens et les appels d'outils sont ceux que l'outil Agent rend à la fin de l'agent ; pour une étape sans agent, écris `-`. N'estime jamais une valeur absente.
 - **Un seul agent à la fois utilise le navigateur Playwright** (`recette-live`).
+- Le TM est souvent débutant avec Claude Code : parle simplement, une ligne par étape, sans jargon (pas de « MCP », « PATH », « JSON » dans tes messages au TM).
 
 ## Étape 0 : vérifications et reprise
 
-1. `PY --version` : 3.10 ou plus. Sinon, arrête-toi et renvoie au README (installation de Python).
-2. Playwright : les outils `mcp__playwright__…` sont-ils disponibles ? Sinon, la recette continue sans navigateur (les contrôles navigateur seront Non testable) : dis-le au TM, avec la commande d'installation du README.
-3. Screaming Frog : cherche `sf_crawl` avec ToolSearch. S'il est trouvé, appelle `sf_list_crawls` (limit 10) : tu en auras besoin à l'étape 1.
+1. **Python** : lance le script d'installation, qui garde un Python déjà présent ou installe une seule fois un Python privé (sans droits administrateur, sans rien modifier d'autre sur le poste) :
+   - Windows : `powershell -NoProfile -ExecutionPolicy Bypass -File "SCRIPTS/installer-python.ps1"` ;
+   - macOS ou Linux : `sh "SCRIPTS/installer-python.sh"`.
+
+   Le premier lancement peut prendre une minute : préviens le TM (« j'installe Python pour la recette, une seule fois »). `PY` = ce qui suit `PY=` sur la dernière ligne. Une ligne `ECHEC:` : donne-la au TM telle quelle et arrête-toi.
+2. **Navigateur** : les outils `mcp__playwright__…` sont-ils disponibles ? Sinon, si `DOSSIER/captures/serveur/releves.json` existe, le navigateur a déjà été fait par l'application Audit : tout va bien, n'en parle pas. Sinon, la recette continue sans navigateur (contrôles navigateur en Non testable) : dis-le au TM en une ligne, sans lui demander d'installer quoi que ce soit.
+3. Screaming Frog (seulement si l'étape 2 n'est pas faite) : cherche `sf_crawl` avec ToolSearch. S'il est trouvé, appelle `sf_list_crawls` (limit 10) : tu en auras besoin à l'étape 1.
 4. Google Drive : note si le connecteur (`create_file`) est disponible.
-5. **Reprise** : si `DOSSIER` existe, reprends à la première étape incomplète, d'après les fichiers :
+5. **Dossier préparé par l'application Audit** : si le répertoire de travail (ou un de ses sous-dossiers) contient `audit-preparation.json`, c'est un dossier téléchargé depuis audit.preprod-lab.com : `DOSSIER` = le dossier qui le contient. Le serveur a déjà fait le cadrage validé, les exports, les gabarits, les scripts et les captures du navigateur. Ne demande ni client ni adresse : dis au TM « je reprends la recette de <client> préparée par le site audit » et continue à l'étape de reprise.
+6. **Reprise** : si `DOSSIER` existe, reprends à la première étape incomplète, d'après les fichiers :
 
    | Étape faite si… | Fichier |
    |---|---|
@@ -69,8 +75,7 @@ Lance `recette-cadrage` avec `MODE=gabarits`. Donne au TM la liste des gabarits 
 ## Étape 4 : scripts
 
 1. Lance `PY SCRIPTS/recette.py tout DOSSIER` **en arrière-plan** (`run_in_background`) : le test des anciennes URLs peut durer plus de 10 minutes. Attends la notification de fin.
-2. Lance `PY SCRIPTS/recette.py lighthouse DOSSIER` (quelques minutes).
-3. Une ligne au TM : contrôles par statut, d'après `donnees/verification.json`.
+2. Une ligne au TM : contrôles par statut, d'après `donnees/verification.json`.
 
 ## Étape 5 : navigateur, expertise, cahier des charges
 
@@ -92,6 +97,8 @@ Lance `recette-livrable` avec `MODE=tickets`. Vérifie que `PY SCRIPTS/recette.p
 
 ## Étape 8 : livrables
 
+**Dossier de l'application Audit** (`audit-preparation.json`) : saute les étapes 8 et 9, le TM construit le livrable dans l'application. Va directement à la fin.
+
 1. Si le connecteur Google Drive est disponible, demande au TM : « Je dépose le fichier de travail dans ton Google Drive, converti en Google Sheets ? »
 2. Lance `recette-livrable` avec `MODE=livrables`, en précisant la réponse du TM.
 
@@ -102,6 +109,10 @@ Lance `recette-livrable` avec `MODE=tickets`. Vérifie que `PY SCRIPTS/recette.p
 3. Si des propositions sont des évolutions du plugin, propose au TM de les envoyer au mainteneur. Ne crée jamais d'issue GitHub sans son accord explicite.
 
 ## Fin
+
+Si le dossier vient de l'application Audit (`audit-preparation.json`), lance d'abord `PY SCRIPTS/recette.py paquet DOSSIER` : il écrit `DOSSIER/../<nom du dossier>-retour.zip`, sans l'accès à la préprod ni les exports. Dis au TM : « Dépose ce fichier dans audit.preprod-lab.com, sur la page de l'audit, bouton Importer la recette terminée » avec le chemin complet du fichier. Arrête-toi là : pas de résumé des fichiers, l'application s'en charge.
+
+Sinon :
 
 Réponds au TM, en court :
 - les deux fichiers : chemins, et liens Google Sheets s'il y en a ;

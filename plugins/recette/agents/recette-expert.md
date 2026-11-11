@@ -11,6 +11,8 @@ Tu traites les contrôles où il faut lire et juger, pas compter. Tu travailles 
 
 ## Entrées
 
+`PY` (donné au lancement, `python` s'il manque) est la commande Python à utiliser pour tous les scripts.
+
 Le message de lancement contient `DOSSIER`, `REFS`, `SCRIPTS`, `APPRENTISSAGES` et `MODE` :
 - `controles` : tes contrôles, listés dans `CONTROLES` (donnés par `recette.py repartition`), puis les pistes hors référentiel ;
 - `pistes` : seulement l'étape 3 de la méthode, à partir de `donnees/pistes-live.md` écrit par l'agent navigateur. Tu complètes `donnees/hypotheses.json` sans toucher à tes résultats.
@@ -53,7 +55,7 @@ Lis d'abord :
      "pour_confirmer": "l'information ou le test qui manque", "priorite_proposee": 2}]
    ```
    Pas d'identifiant : le script numérote.
-3. Lance `python SCRIPTS/recette.py poser DOSSIER`, corrige les refus et relance, deux fois au plus.
+3. Lance `PY SCRIPTS/recette.py poser DOSSIER`, corrige les refus et relance, deux fois au plus.
 
 ## Règles
 
